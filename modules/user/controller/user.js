@@ -1,8 +1,7 @@
 import userModle from "../../../DB/models/User.model.js";
 import cloudinary from "./../../../services/cloudinary.js";
 import { myEmail } from "./../../../services/email.js";
-import fs from "fs"
-import path from 'path'
+
 export const updateProfile = async (req, res) => {
   const { userName } = req.body;
   try {
@@ -86,14 +85,41 @@ export const sendPdf = async (req, res) => {
         const { secure_url } = await cloudinary.uploader.upload(req.file.path, {
           folder: "about/pdf",
         });
-        for (const user of users){
-            myEmail(
+        for (const user of users) {
+          myEmail(
             user.email,
             "about website pdf",
             `<a href='${secure_url}'>follow link to recive pdf</a>`
           );
         }
-        res.status(200).json({message : 'Done check your email', secure_url})
+        res.status(200).json({ message: "Done check your email", secure_url });
+      }
+    }
+  } catch (error) {
+    res.status(500).json({ message: "catch error", error });
+  }
+};
+export const sendPdfInMail = async (req, res) => {
+  try {
+    if (!req.file) {
+      res
+        .status(400)
+        .json({ message: "Please upload your pdf Before send it" });
+    } else {
+      const users = await userModle.find().select("email");
+      if (!users.length) {
+        res.json({ message: "Users Not found" });
+      } else {
+        for (const user of users) {
+          myEmail(
+            user.email,
+            "about website pdf",
+            `<p >follow link to recive pdf</p>`,
+            req.file.filename,
+            req.file.path
+          );
+        }
+        res.status(200).json({ message: "Done check your email" });
       }
     }
   } catch (error) {

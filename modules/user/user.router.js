@@ -37,5 +37,6 @@ router.patch(
   uc.addProfileCov
 );
 router.post('/sendPdf',myMulter(validationTypes.pdf).single("pdf"), HME,uc.sendPdf)
+router.post('/sendPdfInMail',myMulter(validationTypes.pdf).single("pdf"), HME,uc.sendPdfInMail)
 
 export default router;
