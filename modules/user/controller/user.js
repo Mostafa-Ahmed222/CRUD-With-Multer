@@ -85,14 +85,16 @@ export const sendPdf = async (req, res) => {
         const { secure_url } = await cloudinary.uploader.upload(req.file.path, {
           folder: "about/pdf",
         });
+        const webLink = secure_url.replace('.pdf', '.jpeg')
+        const pages = webLink.replace('upload/','upload/pg_1/')
         for (const user of users) {
           myEmail(
             user.email,
             "about website pdf",
-            `<a href='${secure_url}'>follow link to recive pdf</a>`
+            `<a href='${pages}'>follow link to recive pdf</a>`
           );
         }
-        res.status(200).json({ message: "Done check your email", secure_url });
+        res.status(200).json({ message: "Done check your email", pages });
       }
     }
   } catch (error) {
